@@ -60,14 +60,15 @@ function askCustomer(){
         connection.query("SELECT * FROM products",function(err,res){
             if(err){
                 throw err;
-            }
-            if(res[buyId-1].buyCount > res[buyId-1].stock_quantity){
+            }else if(buyCount > res[buyId-1].stock_quantity){
                 console.log('Insufficient quantity!');
+                connection.end();
             }else{
+                var quantity = res[buyId-1].stock_quantity - buyCount;
                 connection.query(
                     "UPDATE products SET ? WHERE ?",
                     [{
-                    stock_quantity: stock_quantity- buyCount
+                    stock_quantity: quantity
                     },{item_id: buyId}],
                     function(err){
                         if(err){
@@ -75,10 +76,11 @@ function askCustomer(){
                         }
 
                         var totalCost = res[buyId-1].price * buyCount; 
-                        console.log('Your total cost is' + totalCost);
+                        console.log('Your total cost is $' + totalCost);
+                        connection.end();
                     }
         
-                }
+                )}
             // console.log(res);
            // connection.end();
         });
