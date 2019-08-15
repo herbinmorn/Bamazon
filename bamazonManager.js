@@ -42,17 +42,112 @@ function listOptions(){
 
 function viewProduct(){
     console.log('Let us see what we have:');
+    connection.query("SELECT * FROM products",function(err,res){
+        if(err){
+            throw err;
+        }
+        console.log(res); 
+        connection.end();    
+    })   
 }
 
 function lowInventory(){
     console.log('Let us see what is running low:');
+    connection.query("SELECT * FROM products",function(err,res){
+        if(err){
+            throw err;
+        }
+        for(var i=0; i<res.length; i++){ 
+            if(res[i].stock_quantity < 5){
+                console.log(res[i].product_name);
+            } 
+        
+        }  
+        connection.end();  
+    })   
 }
 
 function addInventory(){
-    console.log('Let us see what we should get more:');
+    inquirer.prompt([{
+        name:'addInventory',
+        type:'number',
+        message:'which product you want to add more? please input the product\'s item_id ',
+        validate:function(value){
+            if(isNaN(value)===false && value >= 1 && value <=10){
+                return true;
+            }
+            return false;
+        }
+
+    },
+    {
+        name:'addCount',
+        type:'number',
+        message:'how many do you want to add?',
+        validate:function(value){
+            if(isNaN(value) === false){
+                return true;
+            }
+            return false;
+        }
+
+    }
+])
+   .then(function(answer){
+       var addInventory = answer.addInventory;
+       var addCount = answer.addCount;
+       
+       connection.query(
+           //var totalCount =addCount +
+
+           "UPDATE products SET ? WHERE ?",
+           [{stock_quantity: addCount+stock_quantity
+            
+           },{
+               item_id: addInventory}
+            ],function(err){
+               if(err) throw err;
+           }
+       );
+
+   }); 
+   
+   //console.log('Let us see what we should get more:');
 }
 
 function addNew(){
-    console.log('Let us see what is new:');
+    inquirer.prompt({
+        name:'name',
+        type:'input',
+        message:'what is the name of the new product?',
+
+    },{
+        name:'department',
+        type:'list',
+        message:'what department does the new product belong to?',
+        choices:['food','clothing']
+    },{
+        name:'price',
+        type:'number',
+        message:'what is the unit price?'
+    },{
+        name:'quantity',
+        type:'number',
+        message:'how many you want to add?'
+    })
+    .then(function(ans){
+        connection.query(
+            "SELECT * FROM products; INSERT INTO products ? VALUES ?",[
+            {product_name: ans.name},
+            {department_name: ans.department},
+            {price: ans.price},
+            {stock_quantity: ans.quantity}
+        ], function(err){
+                if(err) throw err;
+            }
+        );
+
+    });
+    
 }
 

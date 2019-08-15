@@ -22,12 +22,10 @@ connection.query("SELECT * FROM products",function(err,res){
         throw err;
     }
     console.log(res);
-    
-
-// console.log('response');
+    askCustomer();
 })  
 
-askCustomer();
+
 
 function askCustomer(){
     inquirer.prompt([
