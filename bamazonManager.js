@@ -97,29 +97,33 @@ function addInventory(){
        var addInventory = answer.addInventory;
        var addCount = answer.addCount;
        
-       connection.query(
-           //var totalCount =addCount +
-
+       connection.query("SELECT * FROM products", function(err,res){
+           if(err){
+               throw err;
+           }else {
+           var totalCount = addCount + res[addInventory-1].stock_quantity;
+           connection.query(
            "UPDATE products SET ? WHERE ?",
-           [{stock_quantity: addCount+stock_quantity
-            
-           },{
-               item_id: addInventory}
-            ],function(err){
+           [
+               {stock_quantity: totalCount},
+               {item_id: addInventory}
+           ],
+               function(err){
                if(err) throw err;
            }
        );
 
-   }); 
-   
+   }
+}); 
+ }); 
    //console.log('Let us see what we should get more:');
 }
 
 function addNew(){
-    inquirer.prompt({
+    inquirer.prompt([{
         name:'name',
         type:'input',
-        message:'what is the name of the new product?',
+        message:'what is the name of the new product?'
 
     },{
         name:'department',
@@ -134,15 +138,15 @@ function addNew(){
         name:'quantity',
         type:'number',
         message:'how many you want to add?'
-    })
+    }])
     .then(function(ans){
         connection.query(
-            "SELECT * FROM products; INSERT INTO products ? VALUES ?",[
-            {product_name: ans.name},
-            {department_name: ans.department},
-            {price: ans.price},
-            {stock_quantity: ans.quantity}
-        ], function(err){
+            "INSERT INTO products SET ?",
+            {product_name: ans.name,
+            department_name: ans.department,
+            price: ans.price,
+            stock_quantity: ans.quantity}
+        , function(err){
                 if(err) throw err;
             }
         );
