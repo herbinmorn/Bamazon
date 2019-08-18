@@ -25,3 +25,12 @@ values ('Hawthorn Berry Bar', 'food', 1.99, 40),
 ('Long Cardigan','clothing', 8.99, 30),
 ('Curvy Bootcut Jeans','clothing', 14.99, 56);
 
+create table departments(
+    department_id integer auto_increment,
+    department_name varchar(200) not null,
+    primary key (department_id)
+);
+
+insert into departments (department_name)
+values ('food'),
+('clothing');
